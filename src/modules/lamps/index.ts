@@ -1,2 +1,2 @@
-export * from './containers'
-export * from './domains'
+export * from './containers';
+export * from './domains';

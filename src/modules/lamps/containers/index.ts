@@ -1,1 +1,1 @@
-export * from './lamp-control-page-container'
+export * from './lamp-control-page-container';

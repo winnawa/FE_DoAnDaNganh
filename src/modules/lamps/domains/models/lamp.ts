@@ -1,8 +1,9 @@
-import { LampStatus } from "./lamp-status";
+import { LampStatus } from './lamp-status';
 
-export interface Lamp{
-    id: string,
-    status: LampStatus,
-    name?: string,
-    note?: string,
+export interface Lamp {
+  id: string;
+  status: LampStatus;
+  name?: string;
+  note?: string;
+  imageUrl?: string;
 }

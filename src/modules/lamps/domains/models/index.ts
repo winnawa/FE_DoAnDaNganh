@@ -1,2 +1,2 @@
-export * from './lamp'
-export * from './lamp-status'
+export * from './lamp';
+export * from './lamp-status';

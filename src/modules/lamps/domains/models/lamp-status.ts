@@ -1,1 +1,1 @@
-export type LampStatus = "on"  | "off"
+export type LampStatus = 'on' | 'off';

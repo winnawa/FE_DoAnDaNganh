@@ -1,5 +1,5 @@
-import { Lamp } from "../models";
+import { Lamp } from '../models';
 
-export interface LampRepositoryInterface{
-    getLamps: () => Promise<Lamp[]>
+export interface LampRepositoryInterface {
+  getLamps: () => Promise<Lamp[]>;
 }
