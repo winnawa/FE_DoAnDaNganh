@@ -3,8 +3,8 @@ import { useDispatch } from 'react-redux';
 import lampControlReducer from './lamp-control-page.slice';
 export const store = configureStore({
   reducer: {
-    lampControl: lampControlReducer
-  }
+    lampControl: lampControlReducer,
+  },
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

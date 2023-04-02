@@ -1,7 +1,6 @@
-import { Card, CardProps, Switch, Typography } from 'antd';
+import { Card, CardProps, Space, Typography } from 'antd';
 import styled from 'styled-components';
-import { LampStatus } from '../domains';
-import React, { useState } from 'react';
+import React from 'react';
 import { devices, ItemImageHolder } from '../../../common';
 import { TextProps } from 'antd/es/typography/Text';
 
@@ -35,36 +34,27 @@ const CustomizedText: React.FC<TextProps> = styled(Text)`
   padding-right: 8px;
 `;
 
-export interface LampComponentProps {
+interface ThermoComponentProps {
   id: string;
-  status: LampStatus;
+  data: string;
   name?: string;
-  note?: string;
-  imageUrl: string;
+  imageUrl?: string | undefined;
 }
-
-export const LampComponent: React.FC<LampComponentProps> = (props) => {
-  const [status, setStatus] = useState(props.status === 'on');
-
-  const statusChangeHandler = () => {
-    // TODO: dispatch status change action
-  };
-
+export const ThermoComponent: React.FC<ThermoComponentProps> = (props) => {
+  const defaultImageUrl =
+    'https://assets.fishersci.com/TFS-Assets/CCG/product-images/default.jpg-650.jpg';
   return (
     <>
       <CustomizedSquareCard hoverable={true}>
         <FlexRowWrapper>
-          <ItemImageHolder imageUrl={props.imageUrl} />
-          <Text strong>{props.name ? props.name : 'Lamp Name'}</Text>
+          <ItemImageHolder imageUrl={props?.imageUrl ?? defaultImageUrl} />
+          <Text strong>{props.name ? props.name : 'Thermo Name'}</Text>
         </FlexRowWrapper>
         <Seperator />
-        <CustomizedText>Status</CustomizedText>
-        <Switch
-          checkedChildren="On"
-          unCheckedChildren="Off"
-          checked={status}
-          onClick={statusChangeHandler}
-        />
+        <Space>
+          <CustomizedText>Data :</CustomizedText>
+          <CustomizedText>{props.data} degree Celcius</CustomizedText>
+        </Space>
       </CustomizedSquareCard>
     </>
   );

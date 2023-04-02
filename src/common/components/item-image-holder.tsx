@@ -5,7 +5,9 @@ import React from 'react';
 interface CustomizedCardProps {
   backgroundImage: string;
 }
-const CustomizedCard: React.FC<CardProps | CustomizedCardProps> = styled(Card)<CustomizedCardProps>`
+const CustomizedCard: React.FC<CardProps | CustomizedCardProps> = styled(
+  Card,
+)<CustomizedCardProps>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,15 +15,14 @@ const CustomizedCard: React.FC<CardProps | CustomizedCardProps> = styled(Card)<C
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 110px;
 `;
 
 interface DataHolderProps {
-  data: string;
   imageUrl: string;
 }
-export const LampImageHolder: React.FC<DataHolderProps> = (props) => {
+export const ItemImageHolder: React.FC<DataHolderProps> = (props) => {
   return (
     <>
       <CustomizedCard backgroundImage={props.imageUrl} />

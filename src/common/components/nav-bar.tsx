@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 
-import React,{ ReactNode, useEffect, useState, } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { logoUrl } from '../constants';
+import { devices, logoUrl } from '../constants';
 import { Typography, MenuProps, Menu } from 'antd';
-
-const { Text } = Typography;
-
+import { TextProps } from 'antd/es/typography/Text';
+import { MessageOutlined } from '@ant-design/icons';
+import { LogHistoryContainer } from '../containers/log-history';
 
 const NavBarHolder = styled.div`
   padding: 10px 20px 12px 20px;
@@ -16,7 +16,7 @@ const NavBarHolder = styled.div`
   border-bottom: solid;
   border-width: 1px;
   border-color: rgba(5, 5, 5, 0.06);
-  margin-bottom: 20px;
+  background-color: #f5f5f5;
 `;
 interface LogoContainerProps {
   logoUrl: string;
@@ -37,9 +37,34 @@ const GroupElement = styled.div`
   }
 `;
 const UserDisplay = styled.div`
+  display: flex;
   padding-right: 20px;
+  align-items: center;
 `;
-const CustomizedMenu: React.FC<MenuProps> = styled(Menu)``;
+const CustomizedMenu: React.FC<MenuProps> = styled(Menu)`
+  background-color: #f5f5f5;
+`;
+
+const WidthWrapper = styled.div`
+  width: 100px;
+
+  @media ${devices.tablet} {
+    min-width: 300px;
+  }
+`;
+
+const CustomizedText: React.FC<TextProps> = styled(Typography.Text)`
+  padding-left: 10px;
+  display: none;
+  .span {
+    display: block;
+  }
+  @media ${devices.tablet} {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+`;
 
 export interface Topic {
   content: string;
@@ -49,10 +74,10 @@ export interface Topic {
 interface NavBarPropsType {
   topics: Topic[];
 }
-export const NavBar: React.FC<NavBarPropsType> = (props:NavBarPropsType) => {
+export const NavBar: React.FC<NavBarPropsType> = (props: NavBarPropsType) => {
   const navigate = useNavigate();
   const [current, setCurrent] = useState<string>(props.topics[0].path);
-  
+
   const onClick: MenuProps['onClick'] = (e) => {
     setCurrent(e.key);
     navigate(`/${e.key}`);
@@ -72,7 +97,7 @@ export const NavBar: React.FC<NavBarPropsType> = (props:NavBarPropsType) => {
     <NavBarHolder>
       <GroupElement>
         <LogoContainer logoUrl={logoUrl} />
-        <div style={{ minWidth: '300px' }}>
+        <WidthWrapper>
           <CustomizedMenu
             onClick={onClick}
             selectedKeys={[current]}
@@ -80,11 +105,14 @@ export const NavBar: React.FC<NavBarPropsType> = (props:NavBarPropsType) => {
             items={items}
             defaultSelectedKeys={[current]}
           />
-        </div>
+        </WidthWrapper>
       </GroupElement>
       <GroupElement>
         <UserDisplay>
-          <Text>Welcome to smart home !!!</Text>
+          <LogHistoryContainer />
+          <div>
+            <CustomizedText>Welcome to smart home !!!</CustomizedText>
+          </div>
         </UserDisplay>
       </GroupElement>
     </NavBarHolder>
