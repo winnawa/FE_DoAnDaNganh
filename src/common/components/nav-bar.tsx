@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import React, { ReactNode, useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { devices, logoUrl } from '../constants';
 import { Typography, MenuProps, Menu } from 'antd';
 import { TextProps } from 'antd/es/typography/Text';
@@ -76,22 +76,23 @@ interface NavBarPropsType {
 }
 export const NavBar: React.FC<NavBarPropsType> = (props: NavBarPropsType) => {
   const navigate = useNavigate();
-  const [current, setCurrent] = useState<string>(props.topics[0].path);
+  const location = useLocation();
+
+  const [current, setCurrent] = useState<string>(location.pathname);
 
   const onClick: MenuProps['onClick'] = (e) => {
     setCurrent(e.key);
-    navigate(`/${e.key}`);
+    // navigate(`/${e.key}`);
   };
-
+  console.log('rerender',location.pathname)
   const items: MenuProps['items'] = props.topics.map((topic) => ({
-    label: topic.content,
+    label: 
+      (<Link to={`/${topic.path}`}>
+      {topic.content}
+    </Link>),
     key: topic.path,
     icon: topic.icon,
   }));
-
-  useEffect(() => {
-    navigate('/');
-  }, []);
 
   return (
     <NavBarHolder>
