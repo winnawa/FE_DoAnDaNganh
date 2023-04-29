@@ -6,9 +6,9 @@ import axios from 'axios';
 export const getLamps = createAsyncThunk<Lamp[], string>(
   'lamps/getLamps',
   async (name, { rejectWithValue }) => {
-    //   const response = await axios.get(
-    //     `https://pokeapi.co/api/v2/pokemon/${name}`
-    //   );
+      const response = await axios.get(
+        ``
+      );
     // const data = await response.json()
     // if (response.status < 200 || response.status >= 300) {
     //   return rejectWithValue(data)

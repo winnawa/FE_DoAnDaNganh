@@ -1,8 +1,10 @@
 import styled from 'styled-components';
 import { Thermo } from '../domains';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AddItemComponent, devices } from '../../../common';
 import { ThermoComponent } from '../components';
+import { getThermos } from '../../../redux/thermo-control-page.slice';
+import { useAppDispatch } from '../../../redux';
 const ThermoComponentsFlex = styled.div`
   display: flex;
   flex-direction: column;
@@ -41,6 +43,12 @@ const mockReturnValues: Thermo[] = [
 
 export const ThermoControlPageContainer: React.FC = () => {
   // TODO: dispatch action, get data from store
+  const dispatch = useAppDispatch();
+
+  useEffect(()=>{
+    dispatch(getThermos())
+  },[])
+
   const dumpThermoComponents = mockReturnValues.map((thermo) => (
     <ThermoComponent
       key={thermo.id}
