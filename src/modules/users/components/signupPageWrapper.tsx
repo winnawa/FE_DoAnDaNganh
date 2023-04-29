@@ -6,6 +6,7 @@ import { InputProps } from 'rc-input';
 import { PasswordProps } from 'antd/es/input';
 import { LoginSubmissionForm } from '../containers';
 import { Link } from 'react-router-dom';
+import { SignupSubmissionForm } from '../containers/signup-page-container';
 
 const { Title,Text } = Typography;
 
@@ -54,13 +55,13 @@ interface FormSubmissison{
   password: string
 }
 interface FormWrapperProps{
-  loginSubmissionHandler: (form:LoginSubmissionForm)=>Promise<void>
+  signupSubmissionHandler: (form:SignupSubmissionForm)=>Promise<void>
 }
 const FormWrapper : React.FC<FormWrapperProps> = (props) => {
 
     const onFinish = (values: FormSubmissison) => {
         const submissionForm: FormSubmissison = {username: values.username, password: values.password}
-        props.loginSubmissionHandler(submissionForm)
+        props.signupSubmissionHandler(submissionForm)
       };
       
       const onFinishFailed = (errorInfo: any) => {
@@ -93,7 +94,26 @@ const FormWrapper : React.FC<FormWrapperProps> = (props) => {
         >
           <CustomizedPassword placeholder='Password'/>
         </Form.Item>
-    
+
+        <Form.Item
+          // label="Re-enter Password"
+          name="repassword"
+          dependencies={['password']}
+          rules={[
+            { required: true, message: 'Please input your password!' },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('password') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('The two passwords that you entered do not match!'));
+              },
+            }),
+          ]}
+        >
+          <CustomizedPassword placeholder='Re-enter Your Password'/>
+        </Form.Item>
+
         <Form.Item name="remember" valuePropName="checked" >
           <Checkbox >Remember me</Checkbox>
         </Form.Item>
@@ -107,10 +127,10 @@ const FormWrapper : React.FC<FormWrapperProps> = (props) => {
     );
 }
 
-interface LoginPageWrapperProps{
-  loginSubmissionHandler: (form:LoginSubmissionForm)=>Promise<void>
+interface SignupPageWrapperProps{
+  signupSubmissionHandler: (form:SignupSubmissionForm)=>Promise<void>
 }
-export const LoginPageWrapper: React.FC<LoginPageWrapperProps> = (props) => {
+export const SignupPageWrapper: React.FC<SignupPageWrapperProps> = (props) => {
   
   return (
     <>
@@ -121,15 +141,14 @@ export const LoginPageWrapper: React.FC<LoginPageWrapperProps> = (props) => {
                 </TittleWrapper>
                 <TextWrapper>
                   <div style={{display:'flex',justifyContent:'center',alignItems:'center',width:'80%', textAlign:'center', fontWeight:'bold'}}>
-                  <Text >Hey, enter your details to login and start the tour !!!</Text>
+                  <Text >Hey, enter your details to signup and start the tour !!!</Text>
                   </div>
                 </TextWrapper>
-                <FormWrapper loginSubmissionHandler={props.loginSubmissionHandler}/>
+                <FormWrapper signupSubmissionHandler={props.signupSubmissionHandler}/>
                 <div style={{display:'flex',justifyContent:'center'}}>
                   <Text>
-                    Don&apos;t have an account?  
-                    <Link to={"/signup"}> Sign up </Link> 
-                    here
+                    Already had an account? Go to  
+                    <Link to={"/login"}> Login </Link> 
                   </Text>
                 </div>
             </CustomizedCard>
