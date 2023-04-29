@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { devices, logoUrl } from '../constants';
-import { Typography, MenuProps, Menu } from 'antd';
+import { Typography, MenuProps, Menu, Button, Tooltip } from 'antd';
 import { TextProps } from 'antd/es/typography/Text';
-import { MessageOutlined } from '@ant-design/icons';
+import { LogoutOutlined, MessageOutlined } from '@ant-design/icons';
 import { LogHistoryContainer } from '../containers/log-history';
 
 const NavBarHolder = styled.div`
@@ -78,13 +78,19 @@ export const NavBar: React.FC<NavBarPropsType> = (props: NavBarPropsType) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [current, setCurrent] = useState<string>(location.pathname);
+  const [current, setCurrent] = useState<string>(location.pathname.split('/')[1]);
+  const [username,_] = useState<string>(localStorage.getItem('username')?? '');
+
+  const logoutHandler = ()=>{
+    localStorage.removeItem('id');
+    localStorage.removeItem('username');
+    navigate('/login')
+  }
 
   const onClick: MenuProps['onClick'] = (e) => {
     setCurrent(e.key);
-    // navigate(`/${e.key}`);
   };
-  console.log('rerender',location.pathname)
+
   const items: MenuProps['items'] = props.topics.map((topic) => ({
     label: 
       (<Link to={`/${topic.path}`}>
@@ -111,9 +117,15 @@ export const NavBar: React.FC<NavBarPropsType> = (props: NavBarPropsType) => {
       <GroupElement>
         <UserDisplay>
           <LogHistoryContainer />
-          <div>
-            <CustomizedText>Welcome to smart home !!!</CustomizedText>
+          <div style={{paddingRight:'10px'}}>
+            <CustomizedText>
+              Welcome to smart home, {`${username}`} !!!</CustomizedText>
           </div>
+          <Tooltip placement="bottomRight" title={"Logout"}>
+            <Button type='primary' onClick={logoutHandler}>
+              <LogoutOutlined />
+            </Button>
+          </Tooltip>
         </UserDisplay>
       </GroupElement>
     </NavBarHolder>

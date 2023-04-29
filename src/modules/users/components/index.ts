@@ -1,1 +1,1 @@
-export * from './authenticationPageWrapper'
+export * from './loginPageWrapper'
