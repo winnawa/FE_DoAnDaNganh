@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import React from 'react';
 
 interface CustomizedCardProps {
-  backgroundImage: string;
+  backgroundimage: string;
 }
 const CustomizedCard: React.FC<CardProps | CustomizedCardProps> = styled(
   Card,
@@ -11,7 +11,7 @@ const CustomizedCard: React.FC<CardProps | CustomizedCardProps> = styled(
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: ${(props) => `url(${props.backgroundImage})`};
+  background-image: ${(props) => `url(${props.backgroundimage})`};
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -25,7 +25,7 @@ interface DataHolderProps {
 export const ItemImageHolder: React.FC<DataHolderProps> = (props) => {
   return (
     <>
-      <CustomizedCard backgroundImage={props.imageUrl} />
+      <CustomizedCard backgroundimage={props.imageUrl} />
     </>
   );
 };
