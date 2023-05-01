@@ -78,24 +78,25 @@ export const NavBar: React.FC<NavBarPropsType> = (props: NavBarPropsType) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [current, setCurrent] = useState<string>(location.pathname.split('/')[1]);
-  const [username,_] = useState<string>(localStorage.getItem('username')?? '');
+  const [current, setCurrent] = useState<string>(
+    location.pathname.split('/')[1],
+  );
+  const [username, _] = useState<string>(
+    localStorage.getItem('username') ?? '',
+  );
 
-  const logoutHandler = ()=>{
+  const logoutHandler = () => {
     localStorage.removeItem('id');
     localStorage.removeItem('username');
-    navigate('/login')
-  }
+    navigate('/login');
+  };
 
   const onClick: MenuProps['onClick'] = (e) => {
     setCurrent(e.key);
   };
 
   const items: MenuProps['items'] = props.topics.map((topic) => ({
-    label: 
-      (<Link to={`/${topic.path}`}>
-      {topic.content}
-    </Link>),
+    label: <Link to={`/${topic.path}`}>{topic.content}</Link>,
     key: topic.path,
     icon: topic.icon,
   }));
@@ -117,12 +118,13 @@ export const NavBar: React.FC<NavBarPropsType> = (props: NavBarPropsType) => {
       <GroupElement>
         <UserDisplay>
           <LogHistoryContainer />
-          <div style={{paddingRight:'10px'}}>
+          <div style={{ paddingRight: '10px' }}>
             <CustomizedText>
-              Welcome to smart home, {`${username}`} !!!</CustomizedText>
+              Welcome to smart home, {`${username}`} !!!
+            </CustomizedText>
           </div>
-          <Tooltip placement="bottomRight" title={"Logout"}>
-            <Button type='primary' onClick={logoutHandler}>
+          <Tooltip placement="bottomRight" title={'Logout'}>
+            <Button type="primary" onClick={logoutHandler}>
               <LogoutOutlined />
             </Button>
           </Tooltip>

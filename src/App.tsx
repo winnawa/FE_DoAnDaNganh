@@ -4,15 +4,14 @@ import { RouterComponent } from './routes';
 
 function App() {
   return (
-
-  <ConfigProvider
-    theme={{
-      token: {
-        colorPrimary: '#3E6330',
-      },
-    }}
-  >
-    <RouterComponent />
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#3E6330',
+        },
+      }}
+    >
+      <RouterComponent />
     </ConfigProvider>
   );
 }

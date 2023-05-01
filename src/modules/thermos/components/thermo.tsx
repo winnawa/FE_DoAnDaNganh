@@ -1,26 +1,66 @@
-import { Button, Card, CardProps, Checkbox, Form, Input, Modal, ModalProps, Space, Typography } from 'antd';
+import {
+  Button,
+  Card,
+  CardProps,
+  Form,
+  Input,
+  Modal,
+  ModalProps,
+  Space,
+  Typography,
+} from 'antd';
 import styled from 'styled-components';
 import React, { useState } from 'react';
 import { devices, ItemImageHolder } from '../../../common';
 import { TextProps } from 'antd/es/typography/Text';
+import { UpdateThermoDetailForm } from '../../../redux';
 
 const { Text } = Typography;
 
+interface CustomizedImageContainerProps {
+  imageUrl: string;
+}
+const CustomizedImageContainer = styled.div<CustomizedImageContainerProps>`
+  background-image: ${(props) => `url(${props.imageUrl})`};
+  width: 100px;
+  height: 100px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  position: relative;
+  top: -10px;
+`;
 
 const ThermoDetailForm: React.FC<ThermoComponentProps> = (props) => {
-  
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [form] = Form.useForm();
+  const imageUrl = Form.useWatch('ImageUrl', form);
+
   const onFinish = (values: any) => {
-    console.log('Success:', values);
+    const form = {
+      name: values.ThermoName,
+      imageUrl: values.ImageUrl,
+    };
+    console.log('Success:', values, form);
+    props.saveChangeSubmission(form);
   };
-  
+
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
-  
-  return(
+
+  const resetFields = () => {
+    form.resetFields();
+  };
+
+  return (
     <>
-      <Form 
+      <Form
+        form={form}
         name="basic"
+        disabled={!isEditMode}
+        layout={'vertical'}
         style={{ maxWidth: 600 }}
         initialValues={{ remember: true }}
         onFinish={onFinish}
@@ -28,36 +68,72 @@ const ThermoDetailForm: React.FC<ThermoComponentProps> = (props) => {
         autoComplete="off"
       >
         <Form.Item
-          label="Username"
-          name="username"
-          rules={[{ required: true, message: 'Please input your username!' }]}
+          label="Thermo Name"
+          name="ThermoName"
+          initialValue={props.name}
+          rules={[{ required: true, message: 'Please input thermo name!' }]}
         >
           <Input />
         </Form.Item>
 
         <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          label="Image Url"
+          name="ImageUrl"
+          initialValue={props.imageUrl}
+          rules={[{ required: true, message: 'Please input image Url!' }]}
         >
-          <Input.Password />
+          <Input />
         </Form.Item>
 
-        <Form.Item >
+        <CustomizedImageContainer imageUrl={imageUrl} />
+
+        <Form.Item>
           <Button type="primary" htmlType="submit">
-            Submit
+            Save
           </Button>
         </Form.Item>
       </Form>
+
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          position: 'relative',
+        }}
+      >
+        <Button
+          style={{
+            width: '74px',
+            position: 'absolute',
+            top: '-56px',
+            right: '74px',
+          }}
+          onClick={() => {
+            resetFields();
+            setIsEditMode(false);
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          style={{ width: '74px', position: 'absolute', top: '-56px' }}
+          onClick={() => {
+            setIsEditMode(true);
+          }}
+        >
+          Edit
+        </Button>
+      </div>
+      {/* position:'relative',top:'-56px' */}
     </>
-  )
-}
+  );
+};
 
 const CustomizedModel: React.FC<ModalProps> = styled(Modal)`
-  .ant-modal-content{
+  .ant-modal-content {
     height: 400px;
   }
-`
+`;
 const CustomizedSquareCard: React.FC<CardProps> = styled(Card)`
   width: 100%;
   display: flex;
@@ -91,9 +167,9 @@ interface ThermoComponentProps {
   data: string;
   name?: string;
   imageUrl?: string | undefined;
+  saveChangeSubmission: (form: UpdateThermoDetailForm) => Promise<void>;
 }
 export const ThermoComponent: React.FC<ThermoComponentProps> = (props) => {
-
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -102,11 +178,11 @@ export const ThermoComponent: React.FC<ThermoComponentProps> = (props) => {
   };
 
   const handleOk = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setOpen(false);
-    }, 3000);
+    // setLoading(true);
+    // setTimeout(() => {
+    //   setLoading(false);
+    //   setOpen(false);
+    // }, 3000);
   };
 
   const handleCancel = () => {
@@ -117,22 +193,21 @@ export const ThermoComponent: React.FC<ThermoComponentProps> = (props) => {
     'https://assets.fishersci.com/TFS-Assets/CCG/product-images/default.jpg-650.jpg';
   return (
     <>
-    <CustomizedModel
-          width={500}
-          open={open}
-          title="Temperature Reporter"
-          onOk={handleOk}
-          onCancel={handleCancel}
-          footer={[
-            <Button key="back" onClick={handleCancel}>
-              Return
-            </Button>,
-            <Button key="submit" type="primary" loading={loading} onClick={handleOk}>
-              Submit
-            </Button>,
-          ]}
+      <CustomizedModel
+        width={500}
+        open={open}
+        title="Temperature Reporter"
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={[]}
       >
-        <ThermoDetailForm id={props.id} data= {props.data} imageUrl={props?.imageUrl ?? defaultImageUrl} name={props.name ?? 'Thermo Name'}/>
+        <ThermoDetailForm
+          saveChangeSubmission={props.saveChangeSubmission}
+          id={props.id}
+          data={props.data}
+          imageUrl={props?.imageUrl ?? defaultImageUrl}
+          name={props.name ?? 'Thermo Name'}
+        />
       </CustomizedModel>
 
       <CustomizedSquareCard hoverable={true} onClick={showModal}>

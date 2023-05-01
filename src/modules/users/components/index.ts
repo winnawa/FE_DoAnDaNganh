@@ -1,2 +1,2 @@
-export * from './loginPageWrapper'
-export * from './signupPageWrapper'
+export * from './loginPageWrapper';
+export * from './signupPageWrapper';

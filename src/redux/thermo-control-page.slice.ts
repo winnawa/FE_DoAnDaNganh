@@ -1,49 +1,88 @@
 import { AsyncThunk, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { TEMP_FEED_ENDPOINT } from '../connection';
+import { toast } from 'react-toastify';
+import { BACKEND_ROOT_ENDPOINT, TEMP_FEED_ENDPOINT } from '../connection';
 import { Thermo } from '../modules/thermos/domains';
 
 const config = {
-  headers:{
-    "X-AIO-Key": process.env.REACT_APP_ADAFRUIT_X_AIO_Key,
-  }
+  headers: {
+    'X-AIO-Key': process.env.REACT_APP_ADAFRUIT_X_AIO_Key,
+  },
 };
 
-export const getThermos = createAsyncThunk<Thermo[],void>(
+export const getThermos = createAsyncThunk<Thermo[], void>(
   'thermos/getThermos',
-  async (_,{rejectWithValue}) => {
-    const response = await axios.get(
-      `${TEMP_FEED_ENDPOINT}`,config
+  async (_, { rejectWithValue }) => {
+    const listObj: any = [];
+    const responseForThermosDescription = await axios.get(
+      `${BACKEND_ROOT_ENDPOINT}/thermos`,
     );
-    
-      if (response.data){
-        const data = response.data
-        if (data?.value){
-          if (typeof(data.value) === 'string'){
-            const thermoObj : Thermo = {
-              id:data.id, 
-              data:data.value, 
-              imageUrl:'https://bizweb.dktcdn.net/thumb/grande/100/409/770/files/ung-dung-may-do-do-am-trong-gia-dinh.jpg?v=1615278393854'
-            }
-            // console.log(data)
-            return [thermoObj]
-          }
-          return data.value
-        }
+    if (responseForThermosDescription.data) {
+      const thermos = responseForThermosDescription.data.data;
+      for (const element of thermos) {
+        listObj.push(element);
       }
+    }
+
+    const response = await axios.get(`${TEMP_FEED_ENDPOINT}`, config);
+
+    if (response.data) {
+      const data = response.data;
+      if (data?.value) {
+        if (typeof data.value === 'string') {
+          const thermoObj: Thermo = {
+            id: data.feed_id,
+            data: data.value,
+          };
+          // console.log(data)
+          const tempObj = listObj[0];
+          listObj[0] = { ...tempObj, ...thermoObj };
+          // return [thermoObj];
+          return listObj;
+        }
+        return data.value;
+      }
+    }
 
     if (response.status < 200 || response.status >= 300) {
-      return rejectWithValue(response.data.message?? 'error')
+      return rejectWithValue(response.data.message ?? 'error');
     }
     return [];
   },
 );
 
+export interface UpdateThermoDetailForm {
+  name?: string;
+  imageUrl?: string;
+}
+
+export const updateThermos = createAsyncThunk<
+  UpdateThermoDetailForm,
+  UpdateThermoDetailForm
+>('thermos/updateThermos', async (updateThermoDto, { rejectWithValue }) => {
+  const response = await axios.patch(
+    `${BACKEND_ROOT_ENDPOINT}/thermos/2495577`,
+    updateThermoDto,
+    config,
+  );
+
+  if (response.status < 200 || response.status >= 300) {
+    // toast.error(response.data.message ?? 'error')
+    throw Error(response.data.message ?? 'error');
+    return rejectWithValue(response.data.message ?? 'error');
+  }
+
+  return updateThermoDto;
+});
+
+type LoadingStatus = 'Idle' | 'Pending' | 'Fulfilled';
 export interface ThermoControlState {
   thermos: Thermo[];
+  loadingStatus: LoadingStatus;
 }
 const initialState: ThermoControlState = {
   thermos: [],
+  loadingStatus: 'Pending',
 };
 
 export const thermoControlSlice = createSlice({
@@ -52,8 +91,22 @@ export const thermoControlSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getThermos.fulfilled, (state, action) => {
-      state.thermos = action.payload
-    })
+      console.log(action.payload, '92 get thermos fulfilled');
+      state.thermos = action.payload;
+      state.loadingStatus = 'Fulfilled';
+    });
+    builder.addCase(getThermos.pending, (state) => {
+      state.loadingStatus = 'Pending';
+    });
+
+    builder.addCase(updateThermos.fulfilled, (state, action) => {
+      state.thermos[0].name = action.payload.name;
+      state.thermos[0].imageUrl = action.payload.imageUrl;
+      state.loadingStatus = 'Fulfilled';
+    });
+    builder.addCase(updateThermos.pending, (state) => {
+      state.loadingStatus = 'Pending';
+    });
   },
 });
 

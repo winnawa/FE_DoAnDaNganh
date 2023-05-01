@@ -4,15 +4,15 @@ import { ThermoControlPageContainer } from '../modules/thermos/containers';
 import { useNavigate } from 'react-router-dom';
 
 export const ThermoPage: React.FC = () => {
-  const navigate = useNavigate()
-  
-  useEffect(()=>{
+  const navigate = useNavigate();
+
+  useEffect(() => {
     const userId = localStorage.getItem('id');
-    if (!userId){
-      navigate('/login')
+    if (!userId) {
+      navigate('/login');
     }
-  },[])
-  
+  }, []);
+
   return (
     <PagePaddingWrapper>
       <ThermoControlPageContainer />

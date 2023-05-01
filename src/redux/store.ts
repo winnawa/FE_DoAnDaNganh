@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import lampControlReducer from './lamp-control-page.slice';
-import thermoControlReducer from './thermo-control-page.slice'
+import thermoControlReducer from './thermo-control-page.slice';
 
 export const store = configureStore({
   reducer: {
     lampControl: lampControlReducer,
-    thermoControl: thermoControlReducer
+    thermoControl: thermoControlReducer,
   },
 });
 

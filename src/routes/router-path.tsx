@@ -2,7 +2,13 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Layout } from '../common';
 
-import { HomePage, LampPage, LoginPage, SignupPage, ThermoPage } from '../pages';
+import {
+  HomePage,
+  LampPage,
+  LoginPage,
+  SignupPage,
+  ThermoPage,
+} from '../pages';
 
 export const RouterComponent: React.FC = () => {
   return (
