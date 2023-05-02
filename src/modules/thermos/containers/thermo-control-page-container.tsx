@@ -12,7 +12,7 @@ import {
 } from '../../../redux';
 import { useSelector } from 'react-redux';
 import { Skeleton } from 'antd';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 const ThermoComponentsFlex = styled.div`
   display: flex;
   flex-direction: column;
@@ -63,10 +63,24 @@ export const ThermoControlPageContainer: React.FC = () => {
       {loadingStatus === 'Pending' ? (
         <Skeleton />
       ) : (
+        <>
+        <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
         <ThermoComponentsFlex>
           {dumpThermoComponents}
           <AddItemComponent itemType="thermo censor" />
         </ThermoComponentsFlex>
+      </>
       )}
     </>
   );

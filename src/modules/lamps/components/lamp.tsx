@@ -49,6 +49,7 @@ const LampDetailForm: React.FC<
     };
     console.log('Success:', values, form);
     props.saveChangeSubmission(form);
+    setIsEditMode(false)
   };
 
   const onFinishFailed = (errorInfo: any) => {
