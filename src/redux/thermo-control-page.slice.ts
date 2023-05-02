@@ -63,7 +63,6 @@ export const updateThermos = createAsyncThunk<
   const response = await axios.patch(
     `${BACKEND_ROOT_ENDPOINT}/thermos/2495577`,
     updateThermoDto,
-    config,
   );
 
   if (response.status < 200 || response.status >= 300) {
