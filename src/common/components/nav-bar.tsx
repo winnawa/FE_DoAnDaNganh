@@ -6,7 +6,7 @@ import { devices, logoUrl } from '../constants';
 import { Typography, MenuProps, Menu, Button, Tooltip } from 'antd';
 import { TextProps } from 'antd/es/typography/Text';
 import { LogoutOutlined, MessageOutlined } from '@ant-design/icons';
-import { LogHistoryContainer } from '../containers/log-history';
+import { LogHistoryContainer } from '../containers/log-history-container';
 
 const NavBarHolder = styled.div`
   padding: 10px 20px 12px 20px;

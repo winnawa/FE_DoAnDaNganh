@@ -1,4 +1,4 @@
-import { MessageOutlined } from '@ant-design/icons';
+import { BulbFilled, MessageOutlined } from '@ant-design/icons';
 import {
   Badge,
   BadgeProps,
@@ -31,7 +31,14 @@ interface LogHistoryComponentProps {
 export const LogHistoryComponent: React.FC<LogHistoryComponentProps> = (
   props,
 ) => {
-  const logList = props.logs.map((element) => {
+  const logList = props.logs.map((element, index) => {
+    if (index >= props.logs.length - props.newLogs) {
+      return {
+        label: `${element.content} : ${element.time}`,
+        key: element.id,
+        icon: <BulbFilled />,
+      };
+    }
     return {
       label: `${element.content} : ${element.time}`,
       key: element.id,
@@ -44,16 +51,22 @@ export const LogHistoryComponent: React.FC<LogHistoryComponentProps> = (
     items.push({ type: 'divider' });
   }
 
-  const dropDownClickedHandler = () => {
-    props.resetLogs();
+  const dropDownClickedHandler = (open: boolean) => {
+    if (!open) {
+      props.resetLogs();
+    }
   };
 
   return (
     <div
-      onClick={dropDownClickedHandler}
+      // onClick={dropDownClickedHandler}
       style={{ position: 'relative', width: '30px' }}
     >
-      <CustomizedDropdown menu={{ items }} trigger={['click']}>
+      <CustomizedDropdown
+        onOpenChange={dropDownClickedHandler}
+        menu={{ items }}
+        trigger={['click']}
+      >
         <a onClick={(e) => e.preventDefault()}>
           <Space>
             <CustomizedBadge count={props.newLogs} size={'small'}>
