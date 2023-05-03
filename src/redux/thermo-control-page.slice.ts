@@ -77,10 +77,12 @@ export const updateThermos = createAsyncThunk<
 type LoadingStatus = 'Idle' | 'Pending' | 'Fulfilled';
 export interface ThermoControlState {
   thermos: Thermo[];
+  currentTemp: string;
   loadingStatus: LoadingStatus;
 }
 const initialState: ThermoControlState = {
   thermos: [],
+  currentTemp: '...calculating',
   loadingStatus: 'Pending',
 };
 
@@ -92,6 +94,7 @@ export const thermoControlSlice = createSlice({
     builder.addCase(getThermos.fulfilled, (state, action) => {
       console.log(action.payload, '92 get thermos fulfilled');
       state.thermos = action.payload;
+      state.currentTemp = action.payload[0].data;
       state.loadingStatus = 'Fulfilled';
     });
     builder.addCase(getThermos.pending, (state) => {

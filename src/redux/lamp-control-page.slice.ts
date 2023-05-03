@@ -3,7 +3,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Lamp, LampStatus } from '../modules/lamps';
 import axios from 'axios';
 import { BACKEND_ROOT_ENDPOINT, LAMP_FEED_ENDPOINT } from '../connection';
-import { RootState } from './store';
+import { RootState, useAppDispatch } from './store';
+import { createLog } from './log-control-page.slice';
 
 const config = {
   headers: {
@@ -47,57 +48,73 @@ export const updateSingleLamp = createAsyncThunk<
   UpdateSingleLampDetailForm,
   UpdateSingleLampDetailForm,
   { state: RootState }
->('lamps/updateLamp', async (updateLampDto, { rejectWithValue, getState }) => {
-  const response = await axios.patch(
-    `${BACKEND_ROOT_ENDPOINT}/lamps/${updateLampDto.lamp_id}`,
-    updateLampDto,
-  );
+>(
+  'lamps/updateLamp',
+  async (updateLampDto, { rejectWithValue, getState, dispatch }) => {
+    const response = await axios.patch(
+      `${BACKEND_ROOT_ENDPOINT}/lamps/${updateLampDto.lamp_id}`,
+      updateLampDto,
+    );
 
-  if (response.status < 200 || response.status >= 300) {
-    throw Error(response.data.message ?? 'error');
-    return rejectWithValue(response.data.message ?? 'error');
-  }
+    if (response.status < 200 || response.status >= 300) {
+      throw Error(response.data.message ?? 'error');
+      return rejectWithValue(response.data.message ?? 'error');
+    }
 
-  const state = getState();
-  const stateOfLamps = state.lampControl.lamps.map((element)=>{
-    return element.status 
-  });
-  // console.log(stateOfLamps)
-
-  const updatedLampPosition = parseInt(updateLampDto.lamp_id) -1
-  if ( updateLampDto.status && stateOfLamps[updatedLampPosition] !== updateLampDto.status){
-    const stateOfLampsInBinary = state.lampControl.lamps.map((element,index)=>{
-      if (index === updatedLampPosition){
-        return updateLampDto.status === 'on' ? '1' : '0'
-      }
-      return element.status === 'on' ? '1' : '0'
+    const state = getState();
+    const stateOfLamps = state.lampControl.lamps.map((element) => {
+      return element.status;
     });
-    console.log(stateOfLampsInBinary,'state in changing lamp')
-    
-    const adafruitToggleLampString = `${stateOfLampsInBinary[0]}:${stateOfLampsInBinary[1]}:${stateOfLampsInBinary[2]}:${stateOfLampsInBinary[3]}`
+    // console.log(stateOfLamps)
 
-    // console.log(adafruitToggleLampString)
-    await axios.post(`${LAMP_FEED_ENDPOINT}`, {
-      "value": adafruitToggleLampString,
-    },config);
+    const updatedLampPosition = parseInt(updateLampDto.lamp_id) - 1;
+    if (
+      updateLampDto.status &&
+      stateOfLamps[updatedLampPosition] !== updateLampDto.status
+    ) {
+      const stateOfLampsInBinary = state.lampControl.lamps.map(
+        (element, index) => {
+          if (index === updatedLampPosition) {
+            return updateLampDto.status === 'on' ? '1' : '0';
+          }
+          return element.status === 'on' ? '1' : '0';
+        },
+      );
+      console.log(stateOfLampsInBinary, 'state in changing lamp');
 
+      const adafruitToggleLampString = `${stateOfLampsInBinary[0]}:${stateOfLampsInBinary[1]}:${stateOfLampsInBinary[2]}:${stateOfLampsInBinary[3]}`;
 
-  }
+      // console.log(adafruitToggleLampString)
+      await axios.post(
+        `${LAMP_FEED_ENDPOINT}`,
+        {
+          value: adafruitToggleLampString,
+        },
+        config,
+      );
 
-  return updateLampDto;
-});
+      await axios.post(
+        `https://io.adafruit.com/api/v2/lnminhthu1505/feeds/smart-home.led${updateLampDto.lamp_id}/data`,
+        {
+          value: updateLampDto.status === 'on' ? '1' : '0',
+        },
+        config,
+      );
 
-// export const updateAllLampsValue = createAsyncThunk<void, string>(
-//   'lamps/updateLamps',
-//   async (values, { rejectWithValue }) => {
-    
-//     if (response.status < 200 || response.status >= 300) {
-//       throw Error(response.data.message ?? 'error');
-//       return rejectWithValue(response.data.message ?? 'error');
-//     }
-//     return;
-//   },
-// );
+      console.log('reatch create log 1');
+      // const dispatch = useAppDispatch();
+      dispatch(
+        createLog({
+          content: `You have turn ${updateLampDto.status} light number ${updateLampDto.lamp_id}`,
+          time: new Date().toString().split('G')[0],
+        }),
+      );
+      console.log('reatch create log');
+    }
+
+    return updateLampDto;
+  },
+);
 
 type LoadingStatus = 'Idle' | 'Pending' | 'Fulfilled';
 export interface LampControlState {

@@ -13,6 +13,11 @@ import {
 import { useSelector } from 'react-redux';
 import { Skeleton } from 'antd';
 import { toast, ToastContainer } from 'react-toastify';
+import * as io from 'socket.io-client';
+import { BACKEND_ROOT_ENDPOINT } from '../../../connection';
+
+const socket = io.connect(BACKEND_ROOT_ENDPOINT);
+
 const ThermoComponentsFlex = styled.div`
   display: flex;
   flex-direction: column;
@@ -26,10 +31,16 @@ const ThermoComponentsFlex = styled.div`
 `;
 
 export const ThermoControlPageContainer: React.FC = () => {
+  const currentTemp = useSelector(
+    (state: RootState) => state.thermoControl.currentTemp,
+  );
+  const [temperature, setTemperature] = useState(currentTemp);
+
   // TODO: dispatch action, get data from store
   const thermoList = useSelector(
     (state: RootState) => state.thermoControl.thermos,
   );
+
   const loadingStatus = useSelector(
     (state: RootState) => state.thermoControl.loadingStatus,
   );
@@ -38,6 +49,17 @@ export const ThermoControlPageContainer: React.FC = () => {
   useEffect(() => {
     dispatch(getThermos());
   }, []);
+
+  useEffect(() => {
+    setTemperature(currentTemp);
+  }, [currentTemp]);
+
+  useEffect(() => {
+    socket.on('new_temp', (data) => {
+      console.log(data.message, ' data received');
+      setTemperature(data.message);
+    });
+  }, [socket]);
 
   const saveChangeSubmission = async (form: UpdateThermoDetailForm) => {
     try {
@@ -52,7 +74,7 @@ export const ThermoControlPageContainer: React.FC = () => {
       saveChangeSubmission={saveChangeSubmission}
       key={thermo.id}
       id={thermo.id}
-      data={thermo.data}
+      data={temperature}
       name={thermo.name ?? 'Default Name'}
       imageUrl={thermo?.imageUrl}
     />
@@ -64,23 +86,23 @@ export const ThermoControlPageContainer: React.FC = () => {
         <Skeleton />
       ) : (
         <>
-        <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-        <ThermoComponentsFlex>
-          {dumpThermoComponents}
-          <AddItemComponent itemType="thermo censor" />
-        </ThermoComponentsFlex>
-      </>
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+          <ThermoComponentsFlex>
+            {dumpThermoComponents}
+            <AddItemComponent itemType="thermo censor" />
+          </ThermoComponentsFlex>
+        </>
       )}
     </>
   );

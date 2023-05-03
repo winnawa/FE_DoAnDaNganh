@@ -218,7 +218,11 @@ export const ThermoComponent: React.FC<ThermoComponentProps> = (props) => {
         <Seperator />
         <Space>
           <CustomizedText>Data :</CustomizedText>
-          <CustomizedText>{props.data} degree Celcius</CustomizedText>
+          <CustomizedText>
+            {props.data === '...calculating'
+              ? '...calculating'
+              : `${props.data} degree Celcius`}{' '}
+          </CustomizedText>
         </Space>
       </CustomizedSquareCard>
     </>

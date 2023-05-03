@@ -10,6 +10,7 @@ import {
 
 import React from 'react';
 import styled from 'styled-components';
+import { Log } from '../../redux/log-control-page.slice';
 
 const CustomizedDropdown: React.FC<DropdownProps> = styled(Dropdown)`
   &:hover {
@@ -22,34 +23,40 @@ const CustomizedBadge: React.FC<BadgeProps> = styled(Badge)`
   }
 `;
 
-export const LogHistoryComponent = () => {
-  const items: MenuProps['items'] = [
-    {
-      label: 'You have subscribed for a new lamp at 09am 20/12/2022',
-      key: '0',
-    },
-    {
-      type: 'divider',
-    },
-    {
-      label: 'You have subscribed for a new lamp at 12am 20/12/2023',
-      key: '1',
-    },
-    {
-      type: 'divider',
-    },
-    {
-      label: 'You have subscribed for a new lamp at 12am 20/12/2024',
-      key: '3',
-    },
-  ];
+interface LogHistoryComponentProps {
+  logs: Log[];
+  resetLogs: () => void;
+  newLogs: number;
+}
+export const LogHistoryComponent: React.FC<LogHistoryComponentProps> = (
+  props,
+) => {
+  const logList = props.logs.map((element) => {
+    return {
+      label: `${element.content} : ${element.time}`,
+      key: element.id,
+    };
+  });
+
+  const items: MenuProps['items'] = [];
+  for (const element of logList.reverse()) {
+    items.push(element);
+    items.push({ type: 'divider' });
+  }
+
+  const dropDownClickedHandler = () => {
+    props.resetLogs();
+  };
 
   return (
-    <div style={{ position: 'relative', width: '30px' }}>
+    <div
+      onClick={dropDownClickedHandler}
+      style={{ position: 'relative', width: '30px' }}
+    >
       <CustomizedDropdown menu={{ items }} trigger={['click']}>
         <a onClick={(e) => e.preventDefault()}>
           <Space>
-            <CustomizedBadge count={99} size={'small'}>
+            <CustomizedBadge count={props.newLogs} size={'small'}>
               <MessageOutlined style={{ width: '14px', height: '14px' }} />
             </CustomizedBadge>
             {/* <div style={{position:'absolute', right:'2px', top:'-10px'}}>
