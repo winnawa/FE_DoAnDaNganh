@@ -53,7 +53,7 @@ export const ThermoControlPageContainer: React.FC = () => {
   useEffect(() => {
     setTemperature(currentTemp);
   }, [currentTemp]);
-
+  
   useEffect(() => {
     socket.on('new_temp', (data) => {
       console.log(data.message, ' data received');

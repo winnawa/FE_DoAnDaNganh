@@ -9,12 +9,17 @@ import {
   Checkbox,
   Form,
   Input,
+  message,
   Typography,
+  Upload,
+  UploadProps,
 } from 'antd';
 import { InputProps } from 'rc-input';
 import { PasswordProps } from 'antd/es/input';
 import { LoginSubmissionForm } from '../containers';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { UploadOutlined } from '@ant-design/icons';
+import { LOGIN_BY_IMAGE_URL } from '../../../connection';
 
 const { Title, Text } = Typography;
 
@@ -30,7 +35,7 @@ const BackgroundWrapper = styled.div`
   background-size: cover;
 `;
 const CustomizedCard: React.FC<CardProps> = styled(Card)`
-  height: 480px;
+  /* height: 480px; */
   border-radius: 10px;
 `;
 
@@ -122,6 +127,32 @@ interface LoginPageWrapperProps {
   loginSubmissionHandler: (form: LoginSubmissionForm) => Promise<void>;
 }
 export const LoginPageWrapper: React.FC<LoginPageWrapperProps> = (props) => {
+  
+  const navigate = useNavigate();
+  const uploadProps: UploadProps={
+    name: 'file',
+    method:'post',
+    action: LOGIN_BY_IMAGE_URL,
+    headers: {
+      authorization: 'authorization-text',
+    },
+    accept:'.jpeg,.jpg',
+  onChange(info) {
+    if (info.file.status !== 'uploading') {
+      console.log(info.file, info.fileList);
+    }
+    if (info.file.status === 'done') {
+      message.success(`${info.file.name} file uploaded successfully`);
+      console.log(info.file.response);
+      localStorage.setItem('username', info.file.response.user);
+      localStorage.setItem('id', info.file.response.user);
+      navigate('/');
+    } else if (info.file.status === 'error') {
+      message.error(`${info.file.name} file upload failed.`);
+    }
+  },
+  }
+  
   return (
     <>
       <BackgroundWrapper>
@@ -146,7 +177,21 @@ export const LoginPageWrapper: React.FC<LoginPageWrapperProps> = (props) => {
             </div>
           </TextWrapper>
           <FormWrapper loginSubmissionHandler={props.loginSubmissionHandler} />
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
+
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems:'center', flexDirection:'column' }}>
+            <Text>
+              __Or continue by image__
+            </Text>
+            <Upload
+              {...uploadProps}
+              maxCount={1}
+            >
+              <Button icon={<UploadOutlined />}>Upload (Max: 1)</Button>
+            </Upload>
+            
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'center',paddingTop:'14px' }}>
             <Text>
               Don&apos;t have an account?
               <Link to={'/signup'}> Sign up </Link>

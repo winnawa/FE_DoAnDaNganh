@@ -34,7 +34,7 @@ export const LogHistoryContainer: React.FC = () => {
       console.log(data.message, ' noti received');
       dispatch(
         createLog({
-          content: `Turned Fan on because temperature is over 30 (${data.message})`,
+          content: `Turned Fan on because temperature is high (${data.message})`,
           time: new Date().toString().split('G')[0],
         }),
       );
