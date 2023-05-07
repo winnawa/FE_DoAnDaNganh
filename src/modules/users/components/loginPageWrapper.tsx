@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React from 'react';
+import React, { useState } from 'react';
 import { devices } from '../../../common';
 import {
   Button,
@@ -10,6 +10,7 @@ import {
   Form,
   Input,
   message,
+  Modal,
   Typography,
   Upload,
   UploadProps,
@@ -20,6 +21,7 @@ import { LoginSubmissionForm } from '../containers';
 import { Link, useNavigate } from 'react-router-dom';
 import { UploadOutlined } from '@ant-design/icons';
 import { LOGIN_BY_IMAGE_URL } from '../../../connection';
+import { WebcamWrapper } from './webcamWrapper';
 
 const { Title, Text } = Typography;
 
@@ -127,32 +129,45 @@ interface LoginPageWrapperProps {
   loginSubmissionHandler: (form: LoginSubmissionForm) => Promise<void>;
 }
 export const LoginPageWrapper: React.FC<LoginPageWrapperProps> = (props) => {
-  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   const navigate = useNavigate();
-  const uploadProps: UploadProps={
+  const uploadProps: UploadProps = {
     name: 'file',
-    method:'post',
+    method: 'post',
     action: LOGIN_BY_IMAGE_URL,
     headers: {
       authorization: 'authorization-text',
     },
-    accept:'.jpeg,.jpg',
-  onChange(info) {
-    if (info.file.status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`);
-      console.log(info.file.response);
-      localStorage.setItem('username', info.file.response.user);
-      localStorage.setItem('id', info.file.response.user);
-      navigate('/');
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-  }
-  
+    accept: '.jpeg,.jpg',
+    onChange(info) {
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (info.file.status === 'done') {
+        message.success(`${info.file.name} file uploaded successfully`);
+        console.log(info.file.response);
+        localStorage.setItem('username', info.file.response.user);
+        localStorage.setItem('id', info.file.response.user);
+        navigate('/');
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    },
+  };
+
   return (
     <>
       <BackgroundWrapper>
@@ -178,20 +193,43 @@ export const LoginPageWrapper: React.FC<LoginPageWrapperProps> = (props) => {
           </TextWrapper>
           <FormWrapper loginSubmissionHandler={props.loginSubmissionHandler} />
 
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems:'center', flexDirection:'column' }}>
-            <Text>
-              __Or continue by image__
-            </Text>
-            <Upload
-              {...uploadProps}
-              maxCount={1}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: 'column',
+            }}
+          >
+            <Text>__Or continue by image__</Text>
+            <Button
+              type="primary"
+              onClick={showModal}
+              style={{ marginBottom: '10px' }}
             >
+              Open Webcam
+            </Button>
+            <Modal
+              open={isModalOpen}
+              onOk={handleOk}
+              onCancel={handleCancel}
+              footer={[]}
+            >
+              <WebcamWrapper />
+            </Modal>
+
+            <Upload {...uploadProps} maxCount={1}>
               <Button icon={<UploadOutlined />}>Upload (Max: 1)</Button>
             </Upload>
-            
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'center',paddingTop:'14px' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              paddingTop: '14px',
+            }}
+          >
             <Text>
               Don&apos;t have an account?
               <Link to={'/signup'}> Sign up </Link>

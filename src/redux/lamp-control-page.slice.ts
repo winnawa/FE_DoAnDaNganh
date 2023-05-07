@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Lamp, LampStatus } from '../modules/lamps';
 import axios from 'axios';
 import { BACKEND_ROOT_ENDPOINT, LAMP_FEED_ENDPOINT } from '../connection';
-import { RootState, useAppDispatch } from './store';
+import { RootState } from './store';
 import { createLog } from './log-control-page.slice';
 
 const config = {
@@ -102,10 +102,11 @@ export const updateSingleLamp = createAsyncThunk<
       );
 
       console.log('reatch create log 1');
-      // const dispatch = useAppDispatch();
+      const username = localStorage.getItem('username') ?? 'You';
+
       dispatch(
         createLog({
-          content: `You have turn ${updateLampDto.status} light number ${updateLampDto.lamp_id}`,
+          content: `${username} have turned ${updateLampDto.status} light number ${updateLampDto.lamp_id}`,
           time: new Date().toString().split('G')[0],
         }),
       );
